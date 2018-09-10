@@ -83,6 +83,8 @@ struct jog_arm_shared
 
   bool ok_to_publish = false;
   pthread_mutex_t ok_to_publish_mutex;
+
+  planning_scene::PlanningScene * planning_scene_;
 };
 
 // ROS params to be read
@@ -248,7 +250,7 @@ protected:
 
   robot_state::RobotStatePtr kinematic_state_;
 
-  sensor_msgs::JointState jt_state_, orig_jts_, last_jts_;
+  sensor_msgs::JointState jt_state_, orig_jts_, last_jts_, last_jts_no_collision_;
   trajectory_msgs::JointTrajectory new_traj_;
 
   tf::TransformListener listener_;
