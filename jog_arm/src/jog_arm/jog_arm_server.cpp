@@ -182,7 +182,6 @@ collisionCheckThread::collisionCheckThread(const jog_arm_parameters& parameters,
     }
     const robot_model::RobotModelPtr& kinematic_model = model_loader_ptr->getModel();
     planning_scene::PlanningScene planning_scene(kinematic_model);
-    shared_variables.planning_scene_ = new planning_scene::PlanningScene(kinematic_model);
     collision_detection::CollisionRequest collision_request;
     collision_request.group_name = parameters.move_group_name;
     collision_detection::CollisionResult collision_result;
