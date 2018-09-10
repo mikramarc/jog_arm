@@ -182,6 +182,7 @@ collisionCheckThread::collisionCheckThread(const jog_arm_parameters& parameters,
     }
     const robot_model::RobotModelPtr& kinematic_model = model_loader_ptr->getModel();
     planning_scene::PlanningScene planning_scene(kinematic_model);
+    shared_variables.planning_scene_ = new planning_scene::PlanningScene(kinematic_model);
     collision_detection::CollisionRequest collision_request;
     collision_request.group_name = parameters.move_group_name;
     collision_detection::CollisionResult collision_result;
@@ -461,6 +462,10 @@ bool JogCalcs::cartesianJogCalcs(const geometry_msgs::TwistStamped& cmd, jog_arm
 
   kinematic_state_->setVariableValues(jt_state_);
   orig_jts_ = jt_state_;
+  if (false == shared_variables.imminent_collision)
+  {
+  last_jts_no_collision_ = orig_jts_;
+  }
 
   // Convert from cartesian commands to joint commands
   Eigen::MatrixXd old_jacobian = kinematic_state_->getJacobian(joint_model_group_);
@@ -520,6 +525,10 @@ bool JogCalcs::jointJogCalcs(const jog_msgs::JogJoint& cmd, jog_arm_shared& shar
 
   kinematic_state_->setVariableValues(jt_state_);
   orig_jts_ = jt_state_;
+  if (false == shared_variables.imminent_collision)
+  {
+  last_jts_no_collision_ = orig_jts_;
+  }
 
   if (!addJointIncrements(jt_state_, delta))
     return 0;
@@ -750,7 +759,7 @@ void JogCalcs::avoidIssue(trajectory_msgs::JointTrajectory& jt_traj)
   {
     // For position-controlled robots, can reset the joints to a known, good state
     if(parameters_.publish_joint_positions)
-      jt_traj.points[0].positions[i] = orig_jts_.position[i];
+      jt_traj.points[0].positions[i] = last_jts_no_collision_.position[i];
 
     // For velocity-controlled robots, stop
     if(parameters_.publish_joint_velocities)
