@@ -83,8 +83,6 @@ struct jog_arm_shared
 
   bool ok_to_publish = false;
   pthread_mutex_t ok_to_publish_mutex;
-
-  planning_scene::PlanningScene * planning_scene_;
 };
 
 // ROS params to be read
